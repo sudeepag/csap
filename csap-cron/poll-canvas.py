@@ -14,7 +14,7 @@ from read import CanvasReader
 def threshold(days=0, hours=0, minutes=0, seconds=0):
     return days*24*3600 + hours*3600 + minutes*60 + seconds
 
-DEFAULT_THRESHOLD = threshold(days=7)
+DEFAULT_THRESHOLD = threshold(hours=6)
 canvas_token = '9881~NaOD1DvHAF1mFhmyORwMkNzmUb7saHTHUQKmvexWdnEFoRmTQ3QuvVuqvuGnacKk'
 base_url = 'https://ciscoacademy.test.instructure.com'
 api_prefix = '/api/v1'
