@@ -1,0 +1,6 @@
+[info]
+token: 9881~EGjSpsNimiYQwrfJOkA9tAxhzBJzNRrJXN5TDPAs04dQklZqsW6qZZMIkMmlLEhT  ;# fill with the long string that canvas gives you - this wont work
+canvas_instance_url: https://ciscoacademy.test.instructure.com 	;# fill your own, from the url in your canvas windown in your browser
+course_id: 122										;# you should fill your own - look at the url again
+api_prefix = /api/v1
+spark_token: OGM5YTM4NjYtYWIzZC00YzcwLThhZmMtZmEwOTZlZGRhNTU0YzNhMDQ4YjAtNWEx

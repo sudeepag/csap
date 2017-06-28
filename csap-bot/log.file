@@ -1,0 +1,7 @@
+[2017-06-26 14:11:30 +0000] [31455] [INFO] Starting gunicorn 19.7.1
+[2017-06-26 14:11:30 +0000] [31455] [INFO] Listening at: http://127.0.0.1:8000 (31455)
+[2017-06-26 14:11:30 +0000] [31455] [INFO] Using worker: sync
+[2017-06-26 14:11:30 +0000] [31458] [INFO] Booting worker with pid: 31458
+[2017-06-26 14:12:10 +0000] [31455] [INFO] Handling signal: int
+[2017-06-26 14:12:10 +0000] [31458] [INFO] Worker exiting (pid: 31458)
+[2017-06-26 14:12:10 +0000] [31455] [INFO] Shutting down: Master
