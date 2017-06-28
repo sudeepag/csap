@@ -8,7 +8,7 @@ import json
 import pandas as pd
 from tzlocal import get_localzone
 import sys
-sys.path.append("/home/ec2-user/projects/canvas")
+sys.path.append("/home/ec2-user/csap/canvas")
 from read import CanvasReader
 
 def threshold(days=0, hours=0, minutes=0, seconds=0):
