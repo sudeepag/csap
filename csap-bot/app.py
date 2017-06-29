@@ -8,7 +8,8 @@ import json
 import time
 import random
 import sys
-sys.path.append("/home/ec2-user/projects/csap-data")
+sys.path.append("/home/ec2-user/csap/csap-data")
+sys.path.append("/home/ec2-user/csap/canvas")
 from config import *
 
 # Flask Setup
@@ -42,6 +43,7 @@ def sendSparkGET(url):
     return str(contents)
 
 def format_message(message):
+    print(message)
     bot_name = api.people.me().displayName
     return message[len(bot_name)+1:] if message.startswith(bot_name) else message
 
