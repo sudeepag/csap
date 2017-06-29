@@ -46,16 +46,18 @@ def create_group_with_users(ids, title, startingMessage, teamId=None):
                 add_user_to_team(id, teamId)
         add_user_to_room(id, room.id) # Add user to room
     spark.messages.create(roomId=room.id, markdown=startingMessage)
+    return room.id
     
 def get_team_id(teamname):
     teamdf = pd.read_csv('../csap-data/teams.csv')
     return teamdf[teamdf.team==teamname].id.item()
     
 def create_room_for_section(section):
-    create_group_with_users(ids=[student['login_id'] for student in section['students']],
+    room_id = create_group_with_users(ids=[student['login_id'] for student in section['students']],
                             title=section['course_name'],
                             startingMessage="Hey there! I'm CSAP Bot, and I'll be your CSAP resource through the %s module. Try saying /help to see all the awesome things I can do!" % section['course_name'],
                             teamId=get_team_id(section['name']))
+    return room_id
 
 subaccount_name = 'FY18Q1 Cisco Sales Associates Program (CSAP)'
 def find_sections():
@@ -92,14 +94,15 @@ for section in sections:
         log += "The room for %s (%s) was created %f hours ago.<br>" % (row['course'].item(), row['section'].item(), diff/3600)
     else:
         log += "**Creating the room for %s (%s) . . .**<br>" % (section['course_name'], section['name'])
-        create_room_for_section(section)
-        newdf = pd.DataFrame({"id": [section['id']],
+        room_id = create_room_for_section(section)
+        created_df = pd.DataFrame({"id": [section['id']],
                               "course": [section['course_name']],
                               "section": [section['name']],
                               "timestamp": [time.time()]})
         with open('../csap-data/created.csv', 'a') as f:
-            newdf.to_csv(f, header=False, columns=['id', 'course', 'section', 'timestamp'])
-
+            created_df.to_csv(f, header=False, columns=['id', 'course', 'section', 'timestamp'])
+        question_df = pd.DataFrame(columns=['user_id', 'first_name', 'last_name', 'email', 'question', 'timestamp'])
+        question_df.to_csv('/home/ec2-user/csap/csap-data/questions/%s.csv' % (room_id))
 
 print('%s: %s' % (datetime.now().time(), log))
 

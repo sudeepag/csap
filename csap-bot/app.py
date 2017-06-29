@@ -1,6 +1,7 @@
 from flask import Flask, request
 from ciscosparkapi import CiscoSparkAPI
 from itertools import zip_longest
+import pandas as pd
 import smartsheet
 import urllib
 from urllib.request import urlopen
@@ -56,10 +57,23 @@ def response_for_message(senderId, roomId, message):
     if msg == 'hey':
         response = 'Hey there! Try saying `/help` to see all the awesome things I can do!'
     elif msg == '/help':
-        response = "Hey there! These are the things I can do right now.<br><br>`/question` to ask a question<br>`/group` to randomly split a team into groups<br>`/pick` to randomly pick someone from a team<br>`/roster` to see the roster for this class"
+        response = "Hey there! These are the things I can do right now.<br><br>`/question` to ask a question<br>`/list` to list all the questions<br>`/group` to randomly split a team into groups<br>`/pick` to randomly pick someone from a team<br>`/roster` to see the roster for this class"
     elif msg.startswith('/question'):
-        store_question(senderId, message[len('/question')+1:])
-        response = random_question_response()
+        question_text = message[len('/question')+1:]
+        if len(question_text) == 0:
+            response = 'Please enter a valid question in the format */question Why is CSAP Bot so awesome?*'
+        else:
+            store_question(roomId, senderId, message[len('/question')+1:])
+            response = random_question_response()
+    elif msg == '/list':
+        df = pd.read_csv('/home/ec2-user/csap/csap-data/questions/%s.csv' % roomId)
+        if len(df) == 0:
+            response = 'There are currently no questions. To ask a question, type `/question`, followed by your question.'
+        else:   
+            response = 'Here are the questions currently in the question bank.<br><br>'     
+            for row in df.iterrows():
+                response += '**%s %s**: %s<br>' % (row[1]['first_name'], row[1]['last_name'], row[1]['question'])
+                print(row)
     elif msg.startswith('/group'):
         teamId = api.rooms.get(roomId).teamId
         roomName = api.rooms.get(roomId).title
@@ -119,6 +133,17 @@ def grouping(people, n):
     args = [iter(people)] * int(n)
     return zip_longest(*args, fillvalue=None)
 
+def store_question(room_id, user_id, question):
+    user_info = api.people.get(user_id)
+    newdf = pd.DataFrame({"user_id": [user_id],
+                          "first_name": [user_info.firstName],
+                          "last_name": [user_info.lastName],
+                          "email": [user_info.emails[0]],
+                          "question": [question],
+                          "timestamp": [time.time()]})
+    with open('/home/ec2-user/csap/csap-data/questions/%s.csv' % room_id, 'a') as f:
+        newdf.to_csv(f, header=False, columns=['user_id', 'first_name', 'last_name', 'email', 'question', 'timestamp'])
+
 # SMARTSHEET
 
 def add_cell(column, value, mapping):
@@ -134,7 +159,7 @@ def add_row(columns, values, mapping):
         newRow.cells.append(add_cell(c, v, mapping))
     return newRow
 
-def store_question(user_id, question):
+def store_question_in_smartsheet(user_id, question):
     sheet = ss.Sheets.get_sheet(SS_QUESTIONS_ID)
     column_map = {}
     for column in sheet.columns:
