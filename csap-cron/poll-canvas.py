@@ -86,7 +86,7 @@ def find_sections():
     return (res, log)
 
 sections, log = find_sections()
-created = pd.read_csv('../csap-data/created.csv')
+created = pd.read_csv('/home/ec2-user/csap/csap-data/created.csv')
 for section in sections:
     if section['id'] in list(created.id):
         row = created[created.id==section['id']]
