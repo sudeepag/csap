@@ -61,7 +61,7 @@ def get_team_id(teamname):
 def create_room_for_section(section):
     room_id = create_group_with_users(ids=[student['login_id'] for student in section['students']],
                             title=section['course_name'],
-                            startingMessage="Hey there! I'm CSAP Bot, and I'll be your CSAP resource through the %s module. Try saying /help to see all the awesome things I can do!" % section['course_name'],
+                            startingMessage="Hey there! I'm CSAP Bot, and I'll be your CSAP resource through the %s module. Try saying /help to see all the awesome things I can do, and remember to tag me with `@CSAP` first!" % section['course_name'],
                             teamId=get_team_id(section['name']))
     return room_id
 

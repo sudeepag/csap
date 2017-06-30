@@ -57,7 +57,7 @@ def response_for_message(senderId, roomId, message):
     if msg == 'hey':
         response = 'Hey there! Try saying `/help` to see all the awesome things I can do!'
     elif msg == '/help':
-        response = "Hey there! These are the things I can do right now.<br><br>`/question` to ask a question<br>`/list` to list all the questions<br>`/group` to randomly split a team into groups<br>`/pick` to randomly pick someone from a team<br>`/roster` to see the roster for this class"
+        response = "Hey there! These are the things I can do right now. Remember to tag me first by typing `@CSAP`!<br><br>`/question` to ask a question<br>`/list` to list all the questions<br>`/group` to randomly split a team into groups<br>`/pick` to randomly pick someone from a team<br>`/roster` to see the roster for this class"
     elif msg.startswith('/question'):
         question_text = message[len('/question')+1:]
         if len(question_text) == 0:
