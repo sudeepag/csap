@@ -27,9 +27,15 @@ def user_in_team(user_id, team_id):
     return user_id in member_ids
 
 def add_user_to_team(user_id, team_id):
-    spark.team_memberships.create(teamId=team_id, personEmail=user_id)
-    
+    print("Adding user %s to team %s." % (user_id, team_id))
+    try:   
+        spark.team_memberships.create(teamId=team_id, personEmail=user_id)
+    except Exception as e:
+        print('Error adding user %s to team %s: %s' % (user_id, team_id, e))
+        pass
+
 def add_user_to_room(user_id, room_id):
+    print("Adding user %s to room %s." % (user_id, room_id))
     spark.memberships.create(roomId=room_id,
                                personEmail=user_id)
 
@@ -86,6 +92,7 @@ def find_sections():
     return (res, log)
 
 sections, log = find_sections()
+print(log)
 created = pd.read_csv('/home/ec2-user/csap/csap-data/created.csv')
 for section in sections:
     if section['id'] in list(created.id):
