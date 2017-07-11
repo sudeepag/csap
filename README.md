@@ -45,6 +45,23 @@ Lists all the members currently in the room.
 └── process.pid             # Contains the process ID for the currently running gunicorn process, which can be used to easily kill the process
 ```
 
+### CSAP Data
+
+#### Outline
+This directory is a temporary data storage for the bot and cron job. We should potentially move this to a thread-safe database in the future if the application is scaled (however there is no immediate need to do so).
+
+#### File Structure
+```
+.
+├── config.py               # Contains the IDs for the CSAP bot and the security bot
+├── created.csv             # A list of all the created rooms, which is checked before room creation to prevent duplicate rooms from being created
+├── instructors.csv         # A list of all the instructors with their Cisco IDs, first and last names, and emails
+├── questions               # This directory contains the question bank for each room (the file name is the room ID), which stores questions when `/question` is invoked with the bot
+│   ├── Y2lzY29zcGFyazovL3VzL1JPT00vMzFmMzdjMzAtNWQxMC0xMWU3LTllN2MtOTNkMzMwMjYxMjI4.csv
+│   ├── ... 
+└── teams.csv               # Contains the team IDs for each of the created teams, which is retrieved when inviting the person to the appropriate team and room
+```
+
 ### Useful Unix Commands
 
 `$ sudo ssh -i instance-keypair.pem ec2-user@ec2-13-58-221-119.us-east-2.compute.amazonaws.com`
