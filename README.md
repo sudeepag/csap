@@ -2,7 +2,7 @@
 
 This repository contains the code for the following projects.
 
-### CSAP Cron Job
+### CSAP Cron Job `csap-cron`
 
 #### Outline
 The CSAP cron job runs hourly to poll the Canvas LMS platform for updates to upcoming CSAP sections. If the section falls within a given threshold in the future, the script will create rooms in the appropriate teams for each section and invite the appropriate team members to each group. It also posts updates of each action on the **CSAP Bot Development** Spark room.
@@ -14,7 +14,7 @@ The CSAP cron job runs hourly to poll the Canvas LMS platform for updates to upc
 └── poll-canvas.log         # The output of the poll-canvas.py, stored as a log for future reference
 ```
 
-### CSAP Spark Bot
+### CSAP Spark Bot `csap-bot`
 
 #### Outline
 The Spark bot serves as an automated assistant for CSAP classes. It currently responds to the following commands.
@@ -45,7 +45,7 @@ Lists all the members currently in the room.
 └── process.pid             # Contains the process ID for the currently running gunicorn process, which can be used to easily kill the process
 ```
 
-### CSAP Data
+### CSAP Data `csap-data`
 
 #### Outline
 This directory is a temporary data storage for the bot and cron job. We should potentially move this to a thread-safe database in the future if the application is scaled (however there is no immediate need to do so).
