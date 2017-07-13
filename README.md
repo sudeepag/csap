@@ -1,5 +1,7 @@
 # CSAP Bot and Cron Job Repository
 
+<img src="https://user-images.githubusercontent.com/11940172/28176943-29f562c0-67c7-11e7-97c4-c5984623cf1b.jpg" width="600">
+
 This repository contains the code for the following projects.
 
 ### CSAP Cron Job `csap-cron`
