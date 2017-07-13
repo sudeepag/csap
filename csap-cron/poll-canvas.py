@@ -67,7 +67,7 @@ def get_team_id(teamname):
 def create_room_for_section(section):
     room_id = create_group_with_users(ids=[student['login_id'] for student in section['students']],
                             title=section['course_name'],
-                            startingMessage="Hey there! I'm CSAP Bot, and I'll be your CSAP resource through the %s module. Try saying /help to see all the awesome things I can do, and remember to tag me with `@CSAP` first!" % section['course_name'],
+                            startingMessage="Hey there! I'm CSAP Bot, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@CSAP` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard." % (section['course_name'], section['instructor'], base_url, section['course_id']),
                             teamId=get_team_id(section['name']))
     return room_id
 
@@ -125,17 +125,20 @@ def find_sections():
                         log += '%s' % instructor
                     else:
                         log += '**%s**<br>' % instructor
-
-                tz = timezone(course['time_zone'])
-                dt = dateutil.parser.parse(start, tzinfos=[tz])
-                ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
-                now = time.time()
-                diff = ts-now
-                if diff > 0 and diff < DEFAULT_THRESHOLD:
-                    section['course_name'] = course['name']
-                    section['course_tz'] = course['time_zone']
-                    section['start_unix'] = ts
-                    res.append(section)
+                else:
+                    tz = timezone(course['time_zone'])
+                    dt = dateutil.parser.parse(start, tzinfos=[tz])
+                    ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
+                    now = time.time()
+                    diff = ts-now
+                    if diff > 0 and diff < DEFAULT_THRESHOLD:
+                        section['course_name'] = course['name']
+                        section['course_tz'] = course['time_zone']
+                        section['start_unix'] = ts
+                        section['role'] = role
+                        section['location'] = location
+                        section['instructor'] = instructor
+                        res.append(section)
     return (res, log)
 
 sections, log = find_sections()
