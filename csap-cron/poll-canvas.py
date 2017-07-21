@@ -34,7 +34,7 @@ def user_in_team(user_id, team_id):
 
 def add_user_to_team(user_id, team_id):
     print("Adding user %s to team %s." % (user_id, team_id))
-    try:   
+    try:
         spark.team_memberships.create(teamId=team_id, personEmail=user_id)
     except Exception as e:
         print('Error adding user %s to team %s: %s' % (user_id, team_id, e))
@@ -59,13 +59,18 @@ def create_group_with_users(ids, title, startingMessage, teamId=None):
         add_user_to_room(id, room.id) # Add user to room
     spark.messages.create(roomId=room.id, markdown=startingMessage)
     return room.id
-    
+
 def get_team_id(teamname):
     teamdf = pd.read_csv('../csap-data/teams.csv')
     return teamdf[teamdf.team==teamname].id.item()
-    
+
 def create_room_for_section(section):
-    room_id = create_group_with_users(ids=[student['login_id'] for student in section['students']],
+    ids = [student['login_id'] for student in section['students']
+    try:
+        ids.append(section['instructor'])
+    except:
+        print('No instructor found for %s.' % section['course_name'])
+    room_id = create_group_with_users(ids=ids],
                             title=section['course_name'],
                             startingMessage="Hey there! I'm CSAP Bot, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@CSAP` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard." % (section['course_name'], section['instructor'], base_url, section['course_id']),
                             teamId=get_team_id(section['name']))
@@ -87,12 +92,12 @@ def find_sections():
                 location = None
                 role = None
                 instructor = None
-                
+
                 # Find role
                 for r in roles:
                     if r in course['name']:
                         role = r
-                        
+
                 # Find location
                 if role == 'ASX':
                     for l in asx_locations:
@@ -102,7 +107,7 @@ def find_sections():
                     for l in locations:
                         if l in section['name']:
                             location = l
-                        
+
                 # Find instructor
                 if '-' in section['name']:
                     instructor = section['name'].split('-')[-1].strip()
@@ -125,7 +130,8 @@ def find_sections():
                         log += '%s' % instructor
                     else:
                         log += '**%s**<br>' % instructor
-                else:
+
+                if role and location:
                     tz = timezone(course['time_zone'])
                     dt = dateutil.parser.parse(start, tzinfos=[tz])
                     ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
