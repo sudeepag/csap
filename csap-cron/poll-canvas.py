@@ -70,7 +70,7 @@ def create_room_for_section(section):
         ids.append(section['instructor'])
     except:
         print('No instructor found for %s.' % section['course_name'])
-    room_id = create_group_with_users(ids=ids],
+    room_id = create_group_with_users(ids=ids),
                             title=section['course_name'],
                             startingMessage="Hey there! I'm Jo, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@Jo` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard." % (section['course_name'], section['instructor'], base_url, section['course_id']),
                             teamId=get_team_id(section['name']))
