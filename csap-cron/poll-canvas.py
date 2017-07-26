@@ -65,7 +65,7 @@ def get_team_id(teamname):
     return teamdf[teamdf.team==teamname].id.item()
 
 def create_room_for_section(section):
-    ids = [student['login_id'] for student in section['students']
+    ids = [student['login_id'] for student in section['students']]
     try:
         ids.append(section['instructor'])
     except:
