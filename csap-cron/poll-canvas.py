@@ -20,7 +20,7 @@ canvas_token = '9881~2QiAZJEE1abpIwZ58N5Gufn4cl2qXuRdWZFfOzPX4HII5NHxuFQKHZg1X3s
 base_url = 'https://ciscoacademy.instructure.com'
 api_prefix = '/api/v1'
 canvas = CanvasReader(canvas_token, base_url, api_prefix, verbose=False)
-spark_token = 'OGM5YTM4NjYtYWIzZC00YzcwLThhZmMtZmEwOTZlZGRhNTU0YzNhMDQ4YjAtNWEx'
+spark_token = 'ODhkNTE1NjAtODBkZS00MzRjLWFiMjEtZWU5ZDdhNTIxODg4YWI0MDA1MDktMmJm'
 spark = CiscoSparkAPI(access_token=spark_token)
 
 roles = ['ASR', 'ASE', 'ASX']
@@ -48,7 +48,7 @@ def add_user_to_room(user_id, room_id):
 def create_group_with_users(ids, title, startingMessage, teamId=None):
     room = spark.rooms.create(title, teamId)
     spark.webhooks.create(name=room.id,
-                          targetUrl='http://ec2-13-58-221-119.us-east-2.compute.amazonaws.com:8000/webhook',
+                          targetUrl='http://ec2-34-201-162-247.compute-1.amazonaws.com:8000/webhook',
                           resource='messages',
                           event='created',
                           filter="roomId=%s" % room.id)
@@ -72,7 +72,7 @@ def create_room_for_section(section):
         print('No instructor found for %s.' % section['course_name'])
     room_id = create_group_with_users(ids=ids],
                             title=section['course_name'],
-                            startingMessage="Hey there! I'm CSAP Bot, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@CSAP` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard." % (section['course_name'], section['instructor'], base_url, section['course_id']),
+                            startingMessage="Hey there! I'm Jo, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@Jo` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard." % (section['course_name'], section['instructor'], base_url, section['course_id']),
                             teamId=get_team_id(section['name']))
     return room_id
 
