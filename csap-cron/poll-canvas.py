@@ -15,9 +15,9 @@ def threshold(days=0, hours=0, minutes=0, seconds=0):
     return days*24*3600 + hours*3600 + minutes*60 + seconds
 
 DEFAULT_THRESHOLD = threshold(hours=6)
-old_canvas_token = '9881~NaOD1DvHAF1mFhmyORwMkNzmUb7saHTHUQKmvexWdnEFoRmTQ3QuvVuqvuGnacKk'
-canvas_token = '9881~2QiAZJEE1abpIwZ58N5Gufn4cl2qXuRdWZFfOzPX4HII5NHxuFQKHZg1X3sDgrO0'
-base_url = 'https://ciscoacademy.instructure.com'
+canvas_token = '9881~NaOD1DvHAF1mFhmyORwMkNzmUb7saHTHUQKmvexWdnEFoRmTQ3QuvVuqvuGnacKk'
+new_canvas_token = '9881~2QiAZJEE1abpIwZ58N5Gufn4cl2qXuRdWZFfOzPX4HII5NHxuFQKHZg1X3sDgrO0'
+base_url = 'https://ciscoacademy.test.instructure.com'
 api_prefix = '/api/v1'
 canvas = CanvasReader(canvas_token, base_url, api_prefix, verbose=False)
 spark_token = 'ODhkNTE1NjAtODBkZS00MzRjLWFiMjEtZWU5ZDdhNTIxODg4YWI0MDA1MDktMmJm'
