@@ -137,7 +137,8 @@ def find_sections():
                     ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
                     now = time.time()
                     diff = ts-now
-                    if diff > 0 and diff < DEFAULT_THRESHOLD:
+                    #if diff > 0 and diff < DEFAULT_THRESHOLD:
+                    if diff/3600 < -24 and location and 'Team' in location:
                         section['course_name'] = course['name']
                         section['course_tz'] = course['time_zone']
                         section['start_unix'] = ts
