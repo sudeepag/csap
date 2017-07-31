@@ -61,7 +61,7 @@ def create_group_with_users(ids, title, startingMessage, teamId=None):
     return room.id
 
 def get_team_id(teamname):
-    teamdf = pd.read_csv('../csap-data/teams.csv')
+    teamdf = pd.read_csv('/home/ec2-user/csap/csap-data/teams.csv')
     return teamdf[teamdf.team==teamname].id.item()
 
 def create_room_for_section(section):
