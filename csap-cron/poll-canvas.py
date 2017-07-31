@@ -137,6 +137,8 @@ def find_sections():
                     ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
                     now = time.time()
                     diff = ts-now
+                    log += 'successfully found class %s %s %s' % role, location, course['name']
+                    log += 'the current difference between start time and current time is %s' % diff
                     if diff > 0 and diff < DEFAULT_THRESHOLD:
                         section['course_name'] = course['name']
                         section['course_tz'] = course['time_zone']
