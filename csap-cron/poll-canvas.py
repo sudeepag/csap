@@ -72,7 +72,7 @@ def create_room_for_section(section):
         print('No instructor found for %s.' % section['course_name'])
     room_id = create_group_with_users(ids=ids,
                             title=section['course_name'],
-                            startingMessage="Hey there! I'm Jo, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@Jo` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard." % (section['course_name'], section['instructor'], base_url, section['course_id']),
+                            startingMessage="Hey there! I'm Jo, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@Jo` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard. This is my first time being used in CSAP, so please let Leigh Pember (lpember) know if I'm not working or if I do anything unexpected!" % (section['course_name'], section['instructor'], base_url, section['course_id']),
                             teamId=get_team_id(section['name']))
     return room_id
 
