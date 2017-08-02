@@ -19,7 +19,7 @@ app = Flask(__name__)
 # Spark Setup
 BOT_TOKEN = 'ODhkNTE1NjAtODBkZS00MzRjLWFiMjEtZWU5ZDdhNTIxODg4YWI0MDA1MDktMmJm'
 api = CiscoSparkAPI(access_token=BOT_TOKEN)
-#BOT_ID = api.people.me().id
+BOT_ID = api.people.me().id
 
 # Smartsheet Setup
 SS_TOKEN = '6neubu7it69y4gsl4qzhxg6zth'
@@ -42,6 +42,28 @@ def sendSparkGET(url):
     req.add_header("Authorization", "Bearer "+BOT_TOKEN)
     contents = urlopen(req).read().decode('utf-8')
     return str(contents)
+
+def create_webhook(req):
+    try:
+        room = req['data']['roomId']
+        print("Creating webhook for %s." % (room))
+        api.webhooks.create(name=room,
+                              targetUrl='http://ec2-34-201-162-247.compute-1.amazonaws.com:8000/webhook',
+                              resource='messages',
+                              event='created',
+                              filter="roomId=%s" % room)
+        print("Successfully created webhook for room %s" % room)
+    except Exception as e:
+        if '429' in str(e):
+            sleep_time = int(e.response.headers['Retry-After'])
+            if sleep_time > 60:
+                sleep_time = 60
+            print 'Sleeping for', sleep_time, 'seconds'
+            time.sleep(sleep_time)
+            create_webhook(req)
+        else:
+            print('Error creating webhook for %s: %s' % (room, e))
+            pass
 
 def format_message(message):
     print(message)
@@ -75,13 +97,11 @@ def response_for_message(senderId, roomId, message):
                 response += '**%s %s**: %s<br>' % (row[1]['first_name'], row[1]['last_name'], row[1]['question'])
                 print(row)
     elif msg.startswith('/group'):
-        teamId = api.rooms.get(roomId).teamId
         roomName = api.rooms.get(roomId).title
         ngroups = message[len('/group')+1:].split(' ')[0]
-        if teamId and ngroups:
+        if ngroups:
             people = people_in_room(roomId)
             random.shuffle(people)
-            team = api.teams.get(teamId).name
             groups = grouping(people, ngroups)
             response = "I've randomly split up the %s room into groups of %d:<br>" % (roomName, int(ngroups))
             for i, group in enumerate(groups):
@@ -94,22 +114,14 @@ def response_for_message(senderId, roomId, message):
         else:
             response = "Something looks wrong! Try `/group` `Group Size` in a module room within your team, like this */group 3*"
     elif msg == '/pick':
-        teamId = api.rooms.get(roomId).teamId
-        if teamId:
-            people = people_in_room(roomId)
-            random.shuffle(people)
-            response = "**%s** has been picked!" % (people[0])
-        else:
-            response = "Something looks wrong! Try `/pick` in a module room within your team."
+        people = people_in_room(roomId)
+        random.shuffle(people)
+        response = "**%s** has been picked!" % (people[0])
     elif msg == '/roster':
-        teamId = api.rooms.get(roomId).teamId
-        if teamId:
-            people = people_in_room(roomId)
-            response += "Here's the roster for this class:<br><br>"
-            for i, person in enumerate(people):
-                response += '%d) %s<br>' % (i+1, person)
-        else:
-            response = "Something looks wrong! Try `/roster` in a module room within your team."
+        people = people_in_room(roomId)
+        response += "Here's the roster for this class:<br><br>"
+        for i, person in enumerate(people):
+            response += '%d) %s<br>' % (i+1, person)
     return response
     
 def incoming_message(req):
@@ -211,6 +223,14 @@ def index():
 def webhook():
     if request.method == 'POST':
         incoming_message(request.json)
+        return '', 200
+    else:
+        abort(400)
+
+@app.route('/added', methods=['POST'])
+def added():
+    if request.method == 'POST':
+        create_webhook(request.json)
         return '', 200
     else:
         abort(400)

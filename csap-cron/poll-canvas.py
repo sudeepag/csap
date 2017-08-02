@@ -25,7 +25,7 @@ spark_token = 'ODhkNTE1NjAtODBkZS00MzRjLWFiMjEtZWU5ZDdhNTIxODg4YWI0MDA1MDktMmJm'
 spark = CiscoSparkAPI(access_token=spark_token)
 
 roles = ['ASR', 'ASE', 'ASX']
-locations = ['RTP', 'SJC', 'EMEAR', 'AMS', 'AMS I', 'AMS II', 'SNG', 'APJC', 'Americas', 'EMEAR II', 'APJC']
+locations = ['RTP', 'SJC', 'EMEAR II', 'EMEAR I', 'EMEAR', 'AMS II', 'AMS I', 'AMS', 'SNG', 'APJC', 'Americas']
 asx_locations = ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6', 'Team 7', 'Team 8', 'Team 9', 'Team 10', 'Team 11']
 
 
