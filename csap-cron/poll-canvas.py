@@ -1,5 +1,6 @@
 from ciscosparkapi import CiscoSparkAPI
 import time
+import urllib3
 from pytz import timezone
 import pytz
 import dateutil.parser
@@ -36,22 +37,76 @@ def add_user_to_team(user_id, team_id):
     print("Adding user %s to team %s." % (user_id, team_id))
     try:
         spark.team_memberships.create(teamId=team_id, personEmail=user_id)
-    except Exception as e:
-        print('Error adding user %s to team %s: %s' % (user_id, team_id, e))
-        pass
+    except Exception as e:  
+        if '429' in str(e):    
+            sleep_time = int(e.response.headers['Retry-After'])
+            if sleep_time > 60:
+                sleep_time = 60
+            print 'Sleeping for', sleep_time, 'seconds' 
+            time.sleep(sleep_time)
+            add_user_to_team(user_id, team_id)
+        else:
+            print('Error adding user %s to team %s: %s' % (user_id, team_id, e))
+            pass
+                
 
 def add_user_to_room(user_id, room_id):
-    print("Adding user %s to room %s." % (user_id, room_id))
-    spark.memberships.create(roomId=room_id,
-                               personEmail=user_id)
+    try:
+        print("Adding user %s to room %s." % (user_id, room_id))
+        spark.memberships.create(roomId=room_id,
+                                   personEmail=user_id)
+    except Exception as e:
+        if '429' in str(e):
+            sleep_time = int(e.response.headers['Retry-After'])
+            if sleep_time > 60:
+                sleep_time = 60
+            print 'Sleeping for', sleep_time, 'seconds'                       
+            time.sleep(sleep_time)
+            add_user_to_room(user_id, room_id)
+        else:
+            print('Error adding user %s to room %s: %s' % (user_id, room_id, e))
+            pass
+
+def create_room_wrapper(title, teamId):
+    try:
+        room = spark.rooms.create(title, teamId)
+        return room
+    except Exception as e:
+        if '429' in str(e):
+            sleep_time = int(e.response.headers['Retry-After'])
+            if sleep_time > 60:
+                sleep_time = 60
+            print 'Sleeping for', sleep_time, 'seconds'
+            time.sleep(sleep_time)
+            create_room_wrapper(title, teamId)
+        else:
+            print('Error creating room: %s' % (title))
+            pass
+
+def create_webhook_wrapper(title, teamId, room):
+    try:
+        print("Creating webhook for %s." % (room.id))
+        spark.webhooks.create(name=room.id,
+                              targetUrl='http://ec2-34-201-162-247.compute-1.amazonaws.com:8000/webhook',
+                              resource='messages',
+                              event='created',
+                              filter="roomId=%s" % room.id)
+    except Exception as e:
+        if '429' in str(e):
+            sleep_time = int(e.response.headers['Retry-After'])
+            if sleep_time > 60:
+                sleep_time = 60
+            print 'Sleeping for', sleep_time, 'seconds'
+            time.sleep(sleep_time)
+            create_webhook_wrapper(title, teamId)
+        else:
+            print('Error creating webhook for %s: %s' % (title, e))
+            pass
 
 def create_group_with_users(ids, title, startingMessage, teamId=None):
-    room = spark.rooms.create(title, teamId)
-    spark.webhooks.create(name=room.id,
-                          targetUrl='http://ec2-34-201-162-247.compute-1.amazonaws.com:8000/webhook',
-                          resource='messages',
-                          event='created',
-                          filter="roomId=%s" % room.id)
+
+    room = create_room_wrapper(title, teamId)
+    create_webhook_wrapper(title, teamId, room)
     for id in ids:
         if teamId:
             if not user_in_team(id, teamId): # If user not in team, add to team
@@ -62,18 +117,20 @@ def create_group_with_users(ids, title, startingMessage, teamId=None):
 
 def get_team_id(teamname):
     teamdf = pd.read_csv('/home/ec2-user/csap/csap-data/teams.csv')
+    print teamdf[teamdf.team==teamname].id
+    print teamname
     return teamdf[teamdf.team==teamname].id.item()
 
 def create_room_for_section(section):
     ids = [student['login_id'] for student in section['students']]
-    try:
+    if section['instructor']:
         ids.append(section['instructor'])
-    except:
+    else:
         print('No instructor found for %s.' % section['course_name'])
     room_id = create_group_with_users(ids=ids,
                             title=section['course_name'],
                             startingMessage="Hey there! I'm Jo, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@Jo` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard. This is my first time being used in CSAP, so please let Leigh Pember (lpember) know if I'm not working or if I do anything unexpected!" % (section['course_name'], section['instructor'], base_url, section['course_id']),
-                            teamId=get_team_id(section['name']))
+                            teamId=get_team_id(section['location']))
     return room_id
 
 subaccount_name = 'FY18Q1 Cisco Sales Associates Program (CSAP)'
@@ -112,7 +169,7 @@ def find_sections():
                 if '-' in section['name']:
                     instructor = section['name'].split('-')[-1].strip()
                     name = instructor.split(' ')
-                    query = instructors[(instructors.first_name == name[0]) & (instructors.last_name == name[1])].user_id
+                    query = instructors[(instructors.first_name == name[0]) & (instructors.last_name == name[1])].email
                     if len(query) == 1:
                         instructor = query.item()
 
@@ -131,19 +188,20 @@ def find_sections():
                     else:
                         log += '**%s**<br>' % instructor
 
-                if role and location:
+                if role and location or True:
                     tz = timezone(course['time_zone'])
                     dt = dateutil.parser.parse(start, tzinfos=[tz])
                     ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
                     now = time.time()
                     diff = ts-now
                     #if diff > 0 and diff < DEFAULT_THRESHOLD:
-                    if diff/3600 < -24 and location and 'Team' in location:
+                    print course['name']
+                    if 'Instructional' in course['name']:
                         section['course_name'] = course['name']
                         section['course_tz'] = course['time_zone']
                         section['start_unix'] = ts
                         section['role'] = role
-                        section['location'] = location
+                        section['location'] = 'ASR RTP'
                         section['instructor'] = instructor
                         res.append(section)
     return (res, log)
@@ -170,7 +228,7 @@ for section in sections:
                               "course": [section['course_name']],
                               "section": [section['name']],
                               "timestamp": [time.time()]})
-        with open('../csap-data/created.csv', 'a') as f:
+        with open('/home/ec2-user/csap/csap-data/created.csv', 'a') as f:
             created_df.to_csv(f, header=False, columns=['id', 'course', 'section', 'timestamp'])
         question_df = pd.DataFrame(columns=['user_id', 'first_name', 'last_name', 'email', 'question', 'timestamp'])
         question_df.to_csv('/home/ec2-user/csap/csap-data/questions/%s.csv' % (room_id))
