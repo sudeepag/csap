@@ -15,7 +15,7 @@ from read import CanvasReader
 def threshold(days=0, hours=0, minutes=0, seconds=0):
     return days*24*3600 + hours*3600 + minutes*60 + seconds
 
-DEFAULT_THRESHOLD = threshold(hours=6)
+DEFAULT_THRESHOLD = threshold(hours=-138)
 old_canvas_token = '9881~ZKTdBPBwOhgochgNfJad5YJp1e03Mc0DVyt2B6OSkkSomA7hhXfFZBU8yG9lpB2k'
 canvas_token = '9881~2QiAZJEE1abpIwZ58N5Gufn4cl2qXuRdWZFfOzPX4HII5NHxuFQKHZg1X3sDgrO0'
 base_url = 'https://ciscoacademy.instructure.com'
@@ -162,8 +162,11 @@ def find_sections():
                             location = l
                 else:
                     for l in locations:
+                        print('checking %s against %s') % (l, section['name'])
                         if l in section['name']:
+                            print('Success! Found %s in %s') % (l, section['name'])
                             location = l
+                            break
 
                 # Find instructor
                 if '-' in section['name']:
@@ -188,20 +191,20 @@ def find_sections():
                     else:
                         log += '**%s**<br>' % instructor
 
-                if role and location or True:
+                if role and location:
                     tz = timezone(course['time_zone'])
                     dt = dateutil.parser.parse(start, tzinfos=[tz])
                     ts = (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
                     now = time.time()
                     diff = ts-now
-                    #if diff > 0 and diff < DEFAULT_THRESHOLD:
-                    print course['name']
-                    if 'Instructional' in course['name']:
+                    if diff < DEFAULT_THRESHOLD:
+                        print('got to %s and %s %s. diff is: %s') % (role, location, course['name'], diff)
+                        print course['name']
                         section['course_name'] = course['name']
                         section['course_tz'] = course['time_zone']
                         section['start_unix'] = ts
                         section['role'] = role
-                        section['location'] = 'ASR RTP'
+                        section['location'] = location
                         section['instructor'] = instructor
                         res.append(section)
     return (res, log)
@@ -218,9 +221,10 @@ print(log)
 created = pd.read_csv('/home/ec2-user/csap/csap-data/created.csv')
 for section in sections:
     if section['id'] in list(created.id):
-        row = created[created.id==section['id']]
-        diff = time.time() - row['timestamp'].item()
-        log += "The room for %s (%s) was created %f hours ago.<br>" % (row['course'].item(), row['section'].item(), diff/3600)
+        #row = created[created.id==section['id']]
+        #diff = time.time() - row['timestamp'].item()
+        #log += "The room for %s (%s) was created %f hours ago.<br>" % (row['course'].item(), row['section'].item(), diff/3600)
+        pass
     else:
         log += "**Creating the room for %s (%s) . . .**<br>" % (section['course_name'], section['name'])
         room_id = create_room_for_section(section)
