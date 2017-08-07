@@ -106,7 +106,10 @@ def create_webhook_wrapper(title, teamId, room):
 def create_group_with_users(ids, title, startingMessage, teamId=None):
 
     room = create_room_wrapper(title, teamId)
-    create_webhook_wrapper(title, teamId, room)
+    
+    #removing this so there is not duplicate
+    #create_webhook_wrapper(title, teamId, room)
+    
     for id in ids:
         if teamId:
             if not user_in_team(id, teamId): # If user not in team, add to team
@@ -130,7 +133,7 @@ def create_room_for_section(section):
     room_id = create_group_with_users(ids=ids,
                             title=section['course_name'],
                             startingMessage="Hey there! I'm Jo, and I'll be your resource through the %s module, facilitated by %s. Try saying /help to see all the awesome things I can do, and remember to tag me with `@Jo` first! Click  <a href='%s/courses/%s'>here</a> to access your course dashboard. This is my first time being used in CSAP, so please let Leigh Pember (lpember) know if I'm not working or if I do anything unexpected!" % (section['course_name'], section['instructor'], base_url, section['course_id']),
-                            teamId=get_team_id(section['location']))
+                            teamId=get_team_id(section['role'] + ' ' +section['location']))
     return room_id
 
 subaccount_name = 'FY18Q1 Cisco Sales Associates Program (CSAP)'
