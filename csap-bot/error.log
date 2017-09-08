@@ -1,0 +1,133 @@
+[2017-08-01 17:24:51 +0000] [9821] [DEBUG] Current configuration:
+  proxy_protocol: False
+  worker_connections: 1000
+  statsd_host: None
+  max_requests_jitter: 0
+  post_fork: <function post_fork at 0x257bd70>
+  errorlog: /home/ec2-user/csap/csap-bot/error.log
+  enable_stdio_inheritance: False
+  worker_class: sync
+  ssl_version: 2
+  suppress_ragged_eofs: True
+  syslog: False
+  syslog_facility: user
+  when_ready: <function when_ready at 0x257baa0>
+  pre_fork: <function pre_fork at 0x257bc08>
+  cert_reqs: 0
+  preload_app: False
+  keepalive: 2
+  accesslog: /home/ec2-user/csap/csap-bot/access.log
+  group: 1000
+  graceful_timeout: 30
+  do_handshake_on_connect: False
+  spew: False
+  workers: 1
+  proc_name: None
+  sendfile: None
+  pidfile: None
+  umask: 0
+  on_reload: <function on_reload at 0x257b938>
+  pre_exec: <function pre_exec at 0x257e398>
+  worker_tmp_dir: None
+  limit_request_fields: 100
+  pythonpath: None
+  on_exit: <function on_exit at 0x257eb90>
+  config: None
+  logconfig: None
+  check_config: False
+  statsd_prefix: 
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  reload_engine: auto
+  proxy_allow_ips: ['127.0.0.1']
+  pre_request: <function pre_request at 0x257e500>
+  post_request: <function post_request at 0x257e5f0>
+  forwarded_allow_ips: ['127.0.0.1']
+  worker_int: <function worker_int at 0x257e0c8>
+  raw_paste_global_conf: []
+  threads: 1
+  max_requests: 0
+  chdir: /home/ec2-user/csap/csap-bot
+  daemon: True
+  user: 1000
+  limit_request_line: 4094
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  certfile: None
+  on_starting: <function on_starting at 0x257b7d0>
+  post_worker_init: <function post_worker_init at 0x257bed8>
+  child_exit: <function child_exit at 0x257e758>
+  worker_exit: <function worker_exit at 0x257e8c0>
+  paste: None
+  default_proc_name: wsgi:app
+  syslog_addr: udp://localhost:514
+  syslog_prefix: None
+  ciphers: TLSv1
+  worker_abort: <function worker_abort at 0x257e230>
+  loglevel: debug
+  bind: ['0.0.0.0:8000']
+  raw_env: []
+  initgroups: False
+  capture_output: False
+  reload: False
+  limit_request_field_size: 8190
+  nworkers_changed: <function nworkers_changed at 0x257ea28>
+  timeout: 30
+  keyfile: None
+  ca_certs: None
+  tmp_upload_dir: None
+  backlog: 2048
+  logger_class: gunicorn.glogging.Logger
+[2017-08-01 17:24:51 +0000] [9821] [INFO] Starting gunicorn 19.7.1
+[2017-08-01 17:24:51 +0000] [9821] [DEBUG] Arbiter booted
+[2017-08-01 17:24:51 +0000] [9821] [INFO] Listening at: http://0.0.0.0:8000 (9821)
+[2017-08-01 17:24:51 +0000] [9821] [INFO] Using worker: sync
+[2017-08-01 17:24:51 +0000] [9826] [INFO] Booting worker with pid: 9826
+[2017-08-01 17:24:51 +0000] [9821] [DEBUG] 1 workers
+[2017-08-01 17:25:29 +0000] [9826] [DEBUG] POST /webhook
+[2017-08-01 17:26:02 +0000] [9826] [DEBUG] POST /webhook
+[2017-08-01 17:26:03 +0000] [9826] [DEBUG] POST /webhook
+[2017-08-01 17:26:03,880] ERROR in app: Exception on /webhook [POST]
+Traceback (most recent call last):
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/ec2-user/csap/csap-bot/app.py", line 213, in webhook
+    incoming_message(request.json)
+  File "/home/ec2-user/csap/csap-bot/app.py", line 124, in incoming_message
+    send_message(roomId, response_for_message(senderId, roomId, message))
+  File "/home/ec2-user/csap/csap-bot/app.py", line 52, in send_message
+    api.messages.create(roomId=roomId, markdown=message)
+  File "/usr/lib/python2.7/site-packages/ciscosparkapi/api/messages.py", line 255, in create
+    raise ciscosparkapiException(error_message)
+ciscosparkapiException: You must supply some message content (text, markdown, files) when posting a message.
+[2017-08-01 17:26:10 +0000] [9826] [DEBUG] POST /webhook
+[2017-08-01 17:26:11,190] ERROR in app: Exception on /webhook [POST]
+Traceback (most recent call last):
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/lib64/python2.7/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/ec2-user/csap/csap-bot/app.py", line 213, in webhook
+    incoming_message(request.json)
+  File "/home/ec2-user/csap/csap-bot/app.py", line 124, in incoming_message
+    send_message(roomId, response_for_message(senderId, roomId, message))
+  File "/home/ec2-user/csap/csap-bot/app.py", line 52, in send_message
+    api.messages.create(roomId=roomId, markdown=message)
+  File "/usr/lib/python2.7/site-packages/ciscosparkapi/api/messages.py", line 255, in create
+    raise ciscosparkapiException(error_message)
+ciscosparkapiException: You must supply some message content (text, markdown, files) when posting a message.
+[2017-08-01 17:28:52 +0000] [9821] [INFO] Handling signal: term
+[2017-08-01 17:28:52 +0000] [9826] [INFO] Worker exiting (pid: 9826)
+[2017-08-01 17:28:52 +0000] [9821] [INFO] Shutting down: Master
