@@ -48,7 +48,7 @@ def create_webhook(req):
         room = req['data']['roomId']
         print("Creating webhook for %s." % (room))
         api.webhooks.create(name=room,
-                              targetUrl='http://ec2-34-201-162-247.compute-1.amazonaws.com:8000/webhook',
+                              targetUrl='http://ec2-54-236-245-54.compute-1.amazonaws.com:8000/webhook',
                               resource='messages',
                               event='created',
                               filter="roomId=%s" % room)
